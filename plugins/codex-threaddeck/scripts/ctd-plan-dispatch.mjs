@@ -44,6 +44,18 @@ export function planDispatch(options = {}) {
   const requiredRoles = asArray(decision.visibleWorkers?.suggestedRoles).map(normalizeRole).filter(Boolean);
   const mode = decision.execution?.mode || "single_conversation";
   const requiredRoleSet = new Set(requiredRoles);
+  const routingEnvelope = decision.routingEnvelope || {};
+  const subagentPolicy = {
+    codexNative: decision.subagents?.codexNative !== false,
+    controllerMayUseSubagents: decision.subagents?.controllerMayUseSubagents !== false,
+    workerMayUseSubagents: decision.subagents?.workerMayUseSubagents !== false && decision.subagents?.useInsideVisibleWorkers !== false,
+    useInsideVisibleWorkers: decision.subagents?.useInsideVisibleWorkers !== false,
+    autoUseForBoundedLowRiskTasks: decision.subagents?.autoUseForBoundedLowRiskTasks === true,
+    requireBoundedScope: decision.subagents?.requireBoundedScope !== false,
+    maxPerTask: Number(decision.subagents?.maxPerTask || 3),
+    maxDepth: Number(decision.subagents?.maxDepth || 1),
+    suggested: asArray(decision.subagents?.suggested),
+  };
 
   const matchingWorkers = [];
   const plannedWorkers = [];
@@ -115,9 +127,11 @@ export function planDispatch(options = {}) {
     routingDecision: {
       event: decision.event || "",
       promptSummary: trimForState(decision.promptSummary || ""),
+      routingEnvelope,
       executionMode: mode,
       recommendedAction: decision.recommendedAction || "",
       suggestedRoles: requiredRoles,
+      intentCompiler: decision.intentCompiler || {},
     },
     dispatch: {
       action,
@@ -127,10 +141,30 @@ export function planDispatch(options = {}) {
       doesNotCreateThreads: true,
       doesNotDispatchMessages: true,
     },
+    executionLayers: {
+      currentConversation: true,
+      codexNativeSubagents: mode === "subagent_parallel" || subagentPolicy.codexNative,
+      visibleWorkerThreads: mode === "visible_worker_threads",
+      manualTaskCards: mode === "manual_task_cards",
+      controllerMayUseSubagents: subagentPolicy.controllerMayUseSubagents,
+      visibleWorkersMayUseSubagents: subagentPolicy.workerMayUseSubagents,
+      visibleWorkersArePersistentRoles: true,
+      visibleWorkersAreNotDefaultPerTask: true,
+    },
     workers: {
       matchingActive: matchingWorkers,
       matchingPlanned: plannedWorkers,
       missing: missingWorkers,
+    },
+    subagentPolicy,
+    taskCardDefaults: {
+      workerMayUseSubagents: subagentPolicy.workerMayUseSubagents,
+      subagentPlan: subagentPolicy.suggested,
+      executionRequirements: [
+        "Use the current conversation for small local steps.",
+        "Use Codex native subagents only for bounded, low-risk subtasks when available.",
+        "Visible workers are for persistent role context, not short one-off work.",
+      ],
     },
     nextSteps: nextSteps(action, matchingWorkers, plannedWorkers, missingWorkers),
   });
@@ -140,7 +174,7 @@ function nextSteps(action, matchingWorkers, plannedWorkers, missingWorkers) {
   if (action === "prepare_task_card_for_existing_workers") {
     return [
       "Read the matching worker thread status before dispatch.",
-      "Render a bounded TaskCard for the selected worker.",
+      "Render a bounded TaskCard for the selected worker and include workerMayUseSubagents when appropriate.",
       "Send only after confirming the worker is idle or willing to receive the task.",
       "Require a ShortReport response and update the status board.",
     ];
@@ -160,7 +194,7 @@ function nextSteps(action, matchingWorkers, plannedWorkers, missingWorkers) {
     ];
   }
   if (action === "use_codex_native_subagents") {
-    return ["Use bounded Codex native subagents if available; otherwise continue in the current conversation."];
+    return ["Use bounded Codex native subagents if available; otherwise continue in the current conversation with CTD-aware structure."];
   }
   if (action === "create_manual_task_cards") {
     return ["Create a manual TaskCard or Handoff; do not claim real dispatch occurred."];
@@ -181,6 +215,7 @@ function renderText(plan) {
     `Active workers: ${plan.workers.matchingActive.length ? plan.workers.matchingActive.map((worker) => worker.title).join(", ") : "none"}`,
     `Planned workers: ${plan.workers.matchingPlanned.length ? plan.workers.matchingPlanned.map((worker) => worker.title).join(", ") : "none"}`,
     `Missing workers: ${plan.workers.missing.length ? plan.workers.missing.map((worker) => worker.suggestedTitle).join(", ") : "none"}`,
+    `Worker may use subagents: ${plan.subagentPolicy.workerMayUseSubagents ? "yes" : "no"}`,
     "Next steps:",
     ...plan.nextSteps.map((step) => `- ${step}`),
   ];

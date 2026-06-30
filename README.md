@@ -2,7 +2,7 @@
 
 This repository is the public download and update entrypoint for Codex ThreadDeck (CTD).
 
-CTD is a Codex execution router and multi-thread collaboration control plane. It installs a small project kit into a project, lets Codex detect the project and task state, and recommends the smallest useful execution surface: current conversation, Codex native subagents, visible long-running worker conversations, or manual TaskCards when tools are missing.
+CTD is a Codex execution router and multi-thread collaboration control plane. It installs a small project kit into a project, lets Codex detect the project and task state, compiles ordinary prompts into CTD routing envelopes, and recommends the smallest useful execution surface: current conversation, Codex native subagents, visible long-running worker conversations, or manual TaskCards when tools are missing.
 
 ## Current Channel
 
@@ -17,7 +17,7 @@ CTD is a Codex execution router and multi-thread collaboration control plane. It
 | Package | Purpose |
 | --- | --- |
 | `releases/v0.2.0/ctd-project-kit-v0.2.0.zip` | Public-safe project kit for installing `AGENTS.md` plus `.threaddeck/` into a target project. |
-| `releases/v0.2.0/ctd-plugin-v0.2.0.zip` | Experimental Codex plugin preview with a valid local plugin manifest, ThreadDeck skill, advisory auto-route hook preview, and dispatch planner. |
+| `releases/v0.2.0/ctd-plugin-v0.2.0.zip` | Experimental Codex plugin preview with a valid local plugin manifest, ThreadDeck skill, intent compiler, advisory auto-route hook preview, and dispatch planner. |
 
 ## Install Flow
 

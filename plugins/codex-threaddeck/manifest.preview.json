@@ -8,6 +8,7 @@
   "defaultInstallPackage": "ctd-project-kit-v0.2.0.zip",
   "capabilities": [
     "detect-project-state",
+    "intent-compiler-routing-envelope",
     "recommend-execution-mode",
     "auto-route-hook-preview",
     "plan-dispatch",
@@ -22,6 +23,7 @@
     "does-not-inject-thread-tools",
     "auto-route-hook-is-advisory-only",
     "dispatch-plan-is-advisory-only",
+    "high-risk-actions-use-manual-taskcards-or-confirmation",
     "does-not-create-background-workers-without-user-visible-routing",
     "requires-available-codex-thread-tools-for-real-dispatch"
   ]

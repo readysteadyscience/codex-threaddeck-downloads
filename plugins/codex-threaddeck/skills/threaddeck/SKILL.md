@@ -13,6 +13,23 @@ This Skill is for local Codex App thread coordination. It does not make other th
 
 The target worker threads are user-selected. Numbered names such as `00`, `01`, or `06` are optional conventions, not requirements.
 
+## Default Intent Compiler
+
+When CTD is installed, treat ordinary user prompts as CTD-routable by default. The user does not need to say "use CTD", "dispatch", or any startup phrase.
+
+For each normal task, compile the user's prompt into a CTD routing envelope before deciding how to act:
+
+```text
+normal user prompt
+  -> CTD routing envelope
+  -> choose the smallest safe execution surface
+  -> act locally, use Codex native subagents, dispatch to visible workers, or create manual TaskCards
+```
+
+This is an execution interpretation, not permission to bypass Codex tools. It does not rewrite the user prompt, silently create threads, or skip confirmation gates.
+
+The old manual activation phrase is a compatibility, debug, and manual-recovery fallback. Do not make it the main entry point for normal installed-project work.
+
 ## Operating Model
 
 ```text
@@ -58,6 +75,8 @@ node ../../scripts/recommend-execution-mode.mjs --state /tmp/project-state.json 
 
 Do not use a fixed default set of Docs/Tests/Implementation/Release workers. For bounded complex tasks, prefer Codex native subagents when available. Create or reuse visible worker threads only for persistent roles, long-running maintenance, old-project migration, or when cross-window context must be preserved. A visible worker may use Codex native subagents inside its own task.
 
+The controller may also use Codex native subagents for its own bounded implementation, research, or verification work. A visible worker receiving a TaskCard may use Codex native subagents inside that worker's task when the TaskCard allows it, subject to bounded scope, max-depth, max-count, and risk gates.
+
 When `.threaddeck/last-routing-decision.json` exists, read it as advisory evidence of the most recent CTD auto-route hook decision. Do not treat it as permission to create threads or dispatch work; real dispatch still requires available thread tools and the usual confirmation gates.
 
 When available, turn the routing decision into a safe dispatch plan before touching thread tools:
@@ -66,7 +85,7 @@ When available, turn the routing decision into a safe dispatch plan before touch
 node ../../scripts/ctd-plan-dispatch.mjs --root . --format text
 ```
 
-If the plan says `request_user_confirmation_to_create_or_select_workers`, ask the user before creating, renaming, or registering workers. If the plan says `run_safe_test_before_dispatch`, send only the harmless safety test first. If the plan says `prepare_task_card_for_existing_workers`, read the worker status and render a bounded TaskCard before dispatch.
+If the plan says `request_user_confirmation_to_create_or_select_workers`, ask the user before creating, renaming, or registering workers. If the plan says `run_safe_test_before_dispatch`, send only the harmless safety test first. If the plan says `prepare_task_card_for_existing_workers`, read the worker status and render a bounded TaskCard before dispatch. When rendering a TaskCard for a visible worker, include `workerMayUseSubagents: true` and a bounded `subagentPlan` when the routing plan allows worker-local Codex native subagents.
 
 ## Routing Rules
 

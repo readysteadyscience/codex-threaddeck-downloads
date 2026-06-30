@@ -78,6 +78,8 @@ function main() {
     promptSummary: prompt,
     adoption: state.adoption,
     recommendedAction: state.recommendation?.action || "",
+    routingEnvelope: recommendation.routingEnvelope,
+    intentCompiler: recommendation.intentCompiler,
     execution: recommendation.execution,
     visibleWorkers: recommendation.visibleWorkers,
     subagents: recommendation.subagents,
@@ -88,6 +90,7 @@ function main() {
       doesNotCreateThreads: true,
       doesNotDispatchMessages: true,
       highRiskStillRequiresConfirmation: true,
+      launchCtdIsCompatibilityFallback: true,
     },
   });
 

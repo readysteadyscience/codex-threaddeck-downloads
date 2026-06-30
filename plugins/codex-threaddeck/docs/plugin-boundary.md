@@ -6,6 +6,7 @@ It may help Codex:
 
 - detect a project kit;
 - run a read-only project-state detector;
+- compile ordinary installed-project prompts into CTD routing envelopes;
 - recommend the smallest execution surface for the current task;
 - record advisory auto-route hook decisions after hook trust review;
 - turn the latest routing decision into a safe dispatch plan;
@@ -22,6 +23,7 @@ It must not claim to:
 - silently control other conversations;
 - guarantee thread tools in every conversation;
 - perform high-risk actions without explicit user confirmation.
+- auto-run high-risk release, deploy, account, credential, destructive, or private-repository work.
 - treat hook output as permission to create threads or dispatch work.
 - treat a dispatch plan as permission to create threads or dispatch work.
 

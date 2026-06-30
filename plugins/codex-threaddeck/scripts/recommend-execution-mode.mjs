@@ -98,6 +98,47 @@ function subagentsFor(taskType, text) {
   return agents.slice(0, 3);
 }
 
+function intentRoute(taskType, executionMode) {
+  if (executionMode === "visible_worker_threads") return "persistent_visible_worker_coordination";
+  if (executionMode === "subagent_parallel") return "bounded_native_subagent_parallelism";
+  if (executionMode === "manual_task_cards") return "manual_taskcard_or_handoff";
+  if (taskType === "simple") return "direct_current_conversation";
+  return "direct_current_conversation_with_ctd_awareness";
+}
+
+function decisionKind(executionMode) {
+  if (executionMode === "subagent_parallel") return "task_local_subagents";
+  if (executionMode === "visible_worker_threads") return "persistent_visible_workers";
+  if (executionMode === "manual_task_cards") return "manual_task_cards";
+  return "current_conversation";
+}
+
+function routingEnvelope({ adoption, confirmation, executionMode, intent, multiAgentReady, taskType, threadToolsReady }) {
+  return {
+    schemaVersion: "ctd.routing-envelope.v1",
+    compiler: "ctd.intent-compiler.v1",
+    source: "normal_user_prompt",
+    interpretedByDefault: adoption !== "not_installed",
+    decisionKind: decisionKind(executionMode),
+    route: intentRoute(taskType, executionMode),
+    promptSummary: intent,
+    constraints: {
+      highRiskRequiresConfirmation: confirmation,
+      threadToolsRequiredForVisibleWorkers: executionMode === "visible_worker_threads",
+      threadToolsReady,
+      multiAgentReady,
+    },
+    layers: {
+      currentConversation: true,
+      codexNativeSubagents: multiAgentReady,
+      visibleWorkerThreads: executionMode === "visible_worker_threads",
+      visibleWorkersArePersistentRoles: true,
+      visibleWorkersAreNotDefaultPerTask: true,
+      visibleWorkersMayUseSubagents: true,
+    },
+  };
+}
+
 export function recommendExecutionMode(options = {}) {
 const state = options.state || {};
 const intent = trimForState(options.intent || state.intent?.summary || "", 420);
@@ -116,6 +157,8 @@ const threadToolsReady = state.threadTools?.readyForDispatch === true || options
 const multiAgentReady = hasCapability("multi_agent") || hasCapability("subagent") || options.multiAgent === true || options["multi-agent"] === true;
 const readyProject = adoption === "installed" || adoption === "partial" || adoption === "unknown";
 const smallTask = isSmallTask(intent);
+const maxPerTask = Number(options.maxSubagents || options["max-subagents"] || state.executionPolicy?.maxSubagentsPerTask || 3);
+const maxDepth = Number(options.maxDepth || options["max-depth"] || state.executionPolicy?.maxSubagentDepth || 1);
 
 let executionMode = "single_conversation";
 let reason = "task appears small enough for the current conversation";
@@ -138,18 +181,31 @@ if (adoption === "not_installed") {
   reason = "task is bounded but complex enough to split inside the current conversation using Codex native subagents";
   fallback = "single_conversation";
 } else if (["release", "high_risk", "migration"].includes(taskType)) {
-  executionMode = threadToolsReady && longRunning ? "visible_worker_threads" : "subagent_parallel";
+  executionMode = threadToolsReady && longRunning ? "visible_worker_threads" : "manual_task_cards";
   reason = "task has release, migration, or high-risk signals and must stay behind explicit confirmation gates";
-  fallback = "manual_task_cards";
+  fallback = multiAgentReady && !confirmation ? "subagent_parallel" : "manual_task_cards";
 } else if (["multi_domain", "implementation", "testing", "docs", "investigation"].includes(taskType)) {
   executionMode = "single_conversation";
   reason = "task is collaboration-friendly, but multi-agent capability was not reported";
   fallback = "manual_task_cards";
 }
 
+const suggestedSubagents = multiAgentReady && !confirmation && ["subagent_parallel", "visible_worker_threads"].includes(executionMode)
+  ? subagentsFor(taskType, intent)
+  : [];
+
 return redactSensitive({
   schemaVersion: "ctd.execution-recommendation.v1",
   recommendedAt: nowIso(),
+  routingEnvelope: routingEnvelope({
+    adoption,
+    confirmation,
+    executionMode,
+    intent,
+    multiAgentReady,
+    taskType,
+    threadToolsReady,
+  }),
   project: {
     name: state.projectName || path.basename(process.cwd()),
     adoption,
@@ -159,6 +215,13 @@ return redactSensitive({
     taskType,
     longRunning,
     smallTask,
+  },
+  intentCompiler: {
+    enabled: adoption !== "not_installed",
+    source: "normal_user_prompt",
+    interpretedAs: intentRoute(taskType, executionMode),
+    routingEnvelope: "ctd.routing-envelope.v1",
+    userDidNotNeedToMentionCtd: true,
   },
   capabilities: {
     multiAgentReady,
@@ -178,16 +241,26 @@ return redactSensitive({
   subagents: {
     codexNative: true,
     useInsideVisibleWorkers: true,
-    maxPerTask: Number(options.maxSubagents || options["max-subagents"] || state.executionPolicy?.maxSubagentsPerTask || 3),
-    maxDepth: Number(options.maxDepth || options["max-depth"] || state.executionPolicy?.maxSubagentDepth || 1),
-    suggested: executionMode === "subagent_parallel" ? subagentsFor(taskType, intent) : [],
+    controllerMayUseSubagents: true,
+    workerMayUseSubagents: true,
+    autoUseForBoundedLowRiskTasks: multiAgentReady && !confirmation,
+    requireBoundedScope: true,
+    maxPerTask,
+    maxDepth,
+    suggested: suggestedSubagents,
   },
   policy: {
     autoTriggerFromNormalPrompts: true,
+    compileNormalPromptsIntoRoutingEnvelope: true,
+    controllerMayUseCodexNativeSubagents: true,
+    workersMayUseCodexNativeSubagents: true,
     preferSubagentsForComplexBoundedTasks: true,
     visibleWorkersForLongRunningRoles: true,
+    visibleWorkersArePersistentRoles: true,
+    visibleWorkersAreNotDefaultPerTask: true,
     noFixedDefaultWorkerSet: true,
     highRiskActionsRequireUserConfirmation: true,
+    launchCtdIsCompatibilityFallback: true,
   },
 });
 }
