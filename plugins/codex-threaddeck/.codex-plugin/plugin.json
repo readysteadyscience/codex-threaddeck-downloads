@@ -23,7 +23,7 @@
   "interface": {
     "displayName": "Codex ThreadDeck",
     "shortDescription": "Detect CTD project state and coordinate controller/worker workflows",
-    "longDescription": "Codex ThreadDeck helps Codex conversations detect project state, recommend controller or worker bootstrap, render task cards, parse short reports, validate registries, update status boards, and create handoffs while respecting Codex tool boundaries.",
+    "longDescription": "Codex ThreadDeck helps Codex conversations detect project state, recommend the smallest execution surface, optionally record advisory auto-route hook decisions, render task cards, parse short reports, validate registries, update status boards, and create handoffs while respecting Codex tool boundaries.",
     "developerName": "Ready Steady Science",
     "category": "Coding",
     "capabilities": [
@@ -35,6 +35,7 @@
     "termsOfServiceURL": "https://github.com/readysteadyscience/codex-threaddeck-downloads/blob/main/docs/no-source-policy.md",
     "defaultPrompt": [
       "Check whether this project should use CTD",
+      "Check the CTD execution route for this task",
       "Create a CTD task card",
       "Parse this CTD short report",
       "Prepare a CTD handoff"

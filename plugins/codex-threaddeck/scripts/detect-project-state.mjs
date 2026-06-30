@@ -1,24 +1,24 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { asArray, nowIso, parseArgs, parseSimpleYaml, redactSensitive, trimForState, writeJson, writeText } from "./ctd-lib.mjs";
 
-const args = parseArgs(process.argv.slice(2));
-const root = path.resolve(args.root || args._[0] || process.cwd());
-const format = args.format || (args.json ? "json" : "text");
-const intent = trimForState(args.intent || "");
-const threadTools = new Set(
-  asArray(args.threadTools || args.thread_tools || args["thread-tools"] || args.tool)
-    .flatMap((value) => String(value).split(","))
-    .map((value) => value.trim())
-    .filter(Boolean),
-);
+export function detectProjectState(options = {}) {
+  const root = path.resolve(options.root || process.cwd());
+  const intent = trimForState(options.intent || "");
+  const threadTools = new Set(
+    asArray(options.threadTools || options.thread_tools || options["thread-tools"] || options.tool)
+      .flatMap((value) => String(value).split(","))
+      .map((value) => value.trim())
+      .filter(Boolean),
+  );
 
-function exists(relativePath) {
+function exists(root, relativePath) {
   return fs.existsSync(path.join(root, relativePath));
 }
 
-function readOptional(relativePath) {
+function readOptional(root, relativePath) {
   const absolute = path.join(root, relativePath);
   if (!fs.existsSync(absolute)) return "";
   try {
@@ -28,7 +28,7 @@ function readOptional(relativePath) {
   }
 }
 
-function readRegistry(relativePath) {
+function readRegistry(root, relativePath) {
   const absolute = path.join(root, relativePath);
   if (!fs.existsSync(absolute)) {
     return { ok: false, error: "missing" };
@@ -51,20 +51,20 @@ function detectIntentComplexity(text) {
   return complexPattern.test(text) ? "collaboration_helpful" : "normal_work";
 }
 
-const registry = readRegistry(".threaddeck/thread-registry.yml");
-const agentsText = readOptional("AGENTS.md");
+const registry = readRegistry(root, ".threaddeck/thread-registry.yml");
+const agentsText = readOptional(root, "AGENTS.md");
 const agentsExists = Boolean(agentsText);
 const agentsThreadDeck = /(Codex\s+ThreadDeck|ThreadDeck|CTD|\.threaddeck)/i.test(agentsText);
-const statusBoard = exists(".threaddeck/status-board.json");
-const tasks = exists(".threaddeck/tasks.json");
-const handoffs = exists(".threaddeck/handoffs.json");
-const artifacts = exists(".threaddeck/artifacts.json");
+const statusBoard = exists(root, ".threaddeck/status-board.json");
+const tasks = exists(root, ".threaddeck/tasks.json");
+const handoffs = exists(root, ".threaddeck/handoffs.json");
+const artifacts = exists(root, ".threaddeck/artifacts.json");
 const projectKitFiles = {
   agents: agentsExists,
   agentsThreadDeck,
-  threaddeckDir: exists(".threaddeck"),
+  threaddeckDir: exists(root, ".threaddeck"),
   registry: registry.ok,
-  readme: exists(".threaddeck/README.zh-CN.md") || exists(".threaddeck/README.md"),
+  readme: exists(root, ".threaddeck/README.zh-CN.md") || exists(root, ".threaddeck/README.md"),
   statusBoard,
   tasks,
   handoffs,
@@ -112,7 +112,7 @@ if (adoption === "not_installed") {
   reason = "task appears collaboration-friendly; thread tool availability is unknown or incomplete";
 }
 
-const result = redactSensitive({
+return redactSensitive({
   schemaVersion: "ctd.project-state.v1",
   checkedAt: nowIso(),
   root,
@@ -164,10 +164,9 @@ const result = redactSensitive({
     requiresUserConfirmation: recommendedAction.includes("dispatch") || recommendedAction.includes("bootstrap"),
   },
 });
+}
 
-if (format === "json") {
-  writeJson(args.output, result);
-} else {
+function renderText(result) {
   const lines = [
     `CTD project state: ${result.adoption}`,
     `Project: ${result.projectName}`,
@@ -178,5 +177,24 @@ if (format === "json") {
     `Recommendation: ${result.recommendation.action}`,
     `Reason: ${result.recommendation.reason}`,
   ];
-  writeText(args.output, `${lines.join("\n")}\n`);
+  return `${lines.join("\n")}\n`;
+}
+
+function main() {
+const args = parseArgs(process.argv.slice(2));
+const result = detectProjectState({
+  root: args.root || args._[0] || process.cwd(),
+  intent: args.intent || "",
+  threadTools: args.threadTools || args.thread_tools || args["thread-tools"] || args.tool,
+});
+const format = args.format || (args.json ? "json" : "text");
+if (format === "json") {
+  writeJson(args.output, result);
+} else {
+  writeText(args.output, renderText(result));
+}
+}
+
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  main();
 }

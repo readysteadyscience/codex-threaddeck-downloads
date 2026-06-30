@@ -9,6 +9,7 @@
   "capabilities": [
     "detect-project-state",
     "recommend-execution-mode",
+    "auto-route-hook-preview",
     "recommend-bootstrap",
     "render-task-card",
     "parse-short-report",
@@ -18,6 +19,7 @@
   ],
   "boundaries": [
     "does-not-inject-thread-tools",
+    "auto-route-hook-is-advisory-only",
     "does-not-create-background-workers-without-user-visible-routing",
     "requires-available-codex-thread-tools-for-real-dispatch"
   ]

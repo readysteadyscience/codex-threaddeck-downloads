@@ -1,21 +1,7 @@
 #!/usr/bin/env node
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { asArray, nowIso, parseArgs, readJson, redactSensitive, trimForState, writeJson, writeText } from "./ctd-lib.mjs";
-
-const args = parseArgs(process.argv.slice(2));
-const format = args.format || (args.json ? "json" : "text");
-const state = args.state ? readJson(args.state) : {};
-const intent = trimForState(args.intent || state.intent?.summary || args._.join(" "), 420);
-const capabilities = new Set(
-  asArray(args.capability || args.capabilities)
-    .flatMap((value) => String(value).split(","))
-    .map((value) => value.trim())
-    .filter(Boolean),
-);
-
-function hasCapability(name) {
-  return capabilities.has(name);
-}
 
 function includesAny(text, patterns) {
   return patterns.some((pattern) => pattern.test(text));
@@ -111,12 +97,22 @@ function subagentsFor(taskType, text) {
   return agents.slice(0, 3);
 }
 
-const adoption = state.adoption || args.adoption || "unknown";
+export function recommendExecutionMode(options = {}) {
+const state = options.state || {};
+const intent = trimForState(options.intent || state.intent?.summary || "", 420);
+const capabilities = new Set(
+  asArray(options.capability || options.capabilities)
+    .flatMap((value) => String(value).split(","))
+    .map((value) => value.trim())
+    .filter(Boolean),
+);
+const hasCapability = (name) => capabilities.has(name);
+const adoption = state.adoption || options.adoption || "unknown";
 const taskType = classifyIntent(intent);
 const longRunning = isLongRunning(intent);
 const confirmation = requiresConfirmation(intent, taskType);
-const threadToolsReady = state.threadTools?.readyForDispatch === true || args.threadToolsReady === true || args["thread-tools-ready"] === true;
-const multiAgentReady = hasCapability("multi_agent") || hasCapability("subagent") || args.multiAgent === true || args["multi-agent"] === true;
+const threadToolsReady = state.threadTools?.readyForDispatch === true || options.threadToolsReady === true || options["thread-tools-ready"] === true;
+const multiAgentReady = hasCapability("multi_agent") || hasCapability("subagent") || options.multiAgent === true || options["multi-agent"] === true;
 const readyProject = adoption === "installed" || adoption === "partial" || adoption === "unknown";
 const smallTask = isSmallTask(intent);
 
@@ -132,10 +128,10 @@ if (adoption === "not_installed") {
   executionMode = "single_conversation";
   reason = "task appears small enough to complete directly in the current conversation";
   fallback = "single_conversation";
-} else if (longRunning && threadToolsReady) {
+} else if (longRunning) {
   executionMode = "visible_worker_threads";
   reason = "task describes a long-running role, maintenance lane, or project-level architecture that benefits from visible persistent conversations";
-  fallback = multiAgentReady ? "subagent_parallel" : "manual_task_cards";
+  fallback = threadToolsReady ? (multiAgentReady ? "subagent_parallel" : "manual_task_cards") : "manual_task_cards";
 } else if (["multi_domain", "implementation", "testing", "docs", "investigation"].includes(taskType) && multiAgentReady && readyProject && !confirmation) {
   executionMode = "subagent_parallel";
   reason = "task is bounded but complex enough to split inside the current conversation using Codex native subagents";
@@ -150,7 +146,7 @@ if (adoption === "not_installed") {
   fallback = "manual_task_cards";
 }
 
-const result = redactSensitive({
+return redactSensitive({
   schemaVersion: "ctd.execution-recommendation.v1",
   recommendedAt: nowIso(),
   project: {
@@ -181,8 +177,8 @@ const result = redactSensitive({
   subagents: {
     codexNative: true,
     useInsideVisibleWorkers: true,
-    maxPerTask: Number(args.maxSubagents || args["max-subagents"] || state.executionPolicy?.maxSubagentsPerTask || 3),
-    maxDepth: Number(args.maxDepth || args["max-depth"] || state.executionPolicy?.maxSubagentDepth || 1),
+    maxPerTask: Number(options.maxSubagents || options["max-subagents"] || state.executionPolicy?.maxSubagentsPerTask || 3),
+    maxDepth: Number(options.maxDepth || options["max-depth"] || state.executionPolicy?.maxSubagentDepth || 1),
     suggested: executionMode === "subagent_parallel" ? subagentsFor(taskType, intent) : [],
   },
   policy: {
@@ -193,10 +189,9 @@ const result = redactSensitive({
     highRiskActionsRequireUserConfirmation: true,
   },
 });
+}
 
-if (format === "json") {
-  writeJson(args.output, result);
-} else {
+function renderText(result) {
   const lines = [
     `CTD execution mode: ${result.execution.mode}`,
     `Task type: ${result.intent.taskType}`,
@@ -207,5 +202,30 @@ if (format === "json") {
     `Subagents: ${result.subagents.suggested.length ? result.subagents.suggested.map((agent) => `${agent.id}:${agent.agentType}`).join(", ") : "none"}`,
     `Fallback: ${result.execution.fallback}`,
   ];
-  writeText(args.output, `${lines.join("\n")}\n`);
+  return `${lines.join("\n")}\n`;
+}
+
+function main() {
+const args = parseArgs(process.argv.slice(2));
+const state = args.state ? readJson(args.state) : {};
+const result = recommendExecutionMode({
+  state,
+  intent: args.intent || state.intent?.summary || args._.join(" "),
+  capability: args.capability || args.capabilities,
+  adoption: args.adoption,
+  threadToolsReady: args.threadToolsReady || args["thread-tools-ready"],
+  multiAgent: args.multiAgent || args["multi-agent"],
+  maxSubagents: args.maxSubagents || args["max-subagents"],
+  maxDepth: args.maxDepth || args["max-depth"],
+});
+const format = args.format || (args.json ? "json" : "text");
+if (format === "json") {
+  writeJson(args.output, result);
+} else {
+  writeText(args.output, renderText(result));
+}
+}
+
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  main();
 }

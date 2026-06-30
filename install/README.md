@@ -32,7 +32,7 @@ If `.threaddeck/` already exists, the installer stops. Merge manually or move th
 
 ## Experimental Plugin Preview
 
-`ctd-plugin-v0.2.0.zip` is a beta plugin preview. It includes a valid local Codex plugin manifest, the ThreadDeck preview skill, the read-only project-state detector, and the execution-surface recommender, but does not yet include production hooks or an MCP server.
+`ctd-plugin-v0.2.0.zip` is a beta plugin preview. It includes a valid local Codex plugin manifest, the ThreadDeck preview skill, the read-only project-state detector, the execution-surface recommender, and an advisory auto-route hook preview. The hook must be reviewed/trusted in Codex before use and does not rewrite prompts, create threads, or dispatch messages.
 
 For Codex CLI marketplace installation:
 

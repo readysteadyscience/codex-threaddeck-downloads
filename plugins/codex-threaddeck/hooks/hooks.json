@@ -1,0 +1,29 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "hooks/ctd-auto-route-hook.sh --event SessionStart --format text",
+            "timeout": 10,
+            "statusMessage": "Checking CTD project state"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "hooks/ctd-auto-route-hook.sh --event UserPromptSubmit --format text",
+            "timeout": 10,
+            "statusMessage": "Checking CTD execution route"
+          }
+        ]
+      }
+    ]
+  }
+}
