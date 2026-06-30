@@ -8,6 +8,7 @@
   "defaultInstallPackage": "ctd-project-kit-v0.2.0.zip",
   "capabilities": [
     "detect-project-state",
+    "recommend-execution-mode",
     "recommend-bootstrap",
     "render-task-card",
     "parse-short-report",

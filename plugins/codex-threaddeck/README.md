@@ -5,8 +5,10 @@ This is an experimental Codex ThreadDeck plugin preview.
 It is included to preview the planned product shape:
 
 - project-state detection;
+- read-only project-state detector script;
+- execution-surface recommendation;
 - CTD adoption checks;
-- minimal-confirmation bootstrap recommendations;
+- minimal-confirmation bootstrap recommendations only when persistent worker coordination is useful;
 - TaskCard rendering;
 - ShortReport parsing;
 - registry validation;
@@ -15,7 +17,7 @@ It is included to preview the planned product shape:
 
 ## Important Boundary
 
-This package includes a local Codex plugin manifest and the ThreadDeck preview skill, but it is still experimental. It does not claim that CTD can inject thread tools into ordinary Codex conversations.
+This package includes a local Codex plugin manifest, the ThreadDeck preview skill, a read-only project-state detector script, and an execution-surface recommender, but it is still experimental. It does not claim that CTD can inject thread tools into ordinary Codex conversations.
 
 Real cross-thread dispatch still depends on the current Codex environment exposing the required thread tools.
 

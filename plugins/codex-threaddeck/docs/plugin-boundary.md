@@ -5,7 +5,9 @@ The CTD plugin preview is an experimental package for early local installation t
 It may help Codex:
 
 - detect a project kit;
-- recommend a minimal-confirmation bootstrap;
+- run a read-only project-state detector;
+- recommend the smallest execution surface for the current task;
+- recommend a minimal-confirmation bootstrap only when persistent worker coordination is useful;
 - validate local registry files;
 - render TaskCards;
 - parse ShortReports;

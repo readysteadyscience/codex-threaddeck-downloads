@@ -2,7 +2,7 @@
 
 This repository is the public download and update entrypoint for Codex ThreadDeck (CTD).
 
-CTD is a Codex multi-thread collaboration control plane. It installs a small project kit into a project, lets Codex detect the project and task state, and recommends the smallest useful bootstrap when controller and worker coordination would help.
+CTD is a Codex execution router and multi-thread collaboration control plane. It installs a small project kit into a project, lets Codex detect the project and task state, and recommends the smallest useful execution surface: current conversation, Codex native subagents, visible long-running worker conversations, or manual TaskCards when tools are missing.
 
 ## Current Channel
 
@@ -26,7 +26,7 @@ CTD is a Codex multi-thread collaboration control plane. It installs a small pro
 3. Run the included installer against the project currently opened in Codex.
 4. Continue using Codex normally.
 
-After installation, CTD does not replace Codex. It gives Codex durable project rules and local state files so Codex can detect the CTD setup, inspect collaboration status, and recommend a minimal-confirmation bootstrap when multi-window work is useful.
+After installation, CTD does not replace Codex. It gives Codex durable project rules and local state files so Codex can detect the CTD setup, inspect task shape and risk, and avoid creating visible worker conversations unless persistent context is actually useful.
 
 See `install/README.md` for exact commands.
 

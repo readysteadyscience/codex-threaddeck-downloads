@@ -24,7 +24,7 @@ Inside `.threaddeck/`, CTD stores project collaboration rules, a thread registry
 
 ## Normal Use
 
-After installation, keep using Codex normally. CTD should be discovered from the project files. When the task benefits from controller and worker collaboration, Codex can inspect CTD state and recommend a minimal-confirmation bootstrap.
+After installation, keep using Codex normally. CTD should be discovered from the project files. For each task, Codex can inspect CTD state and choose the smallest useful execution surface: the current conversation, Codex native subagents, visible long-running worker conversations, or manual TaskCards.
 
 ## Existing Projects
 
@@ -32,7 +32,7 @@ If `.threaddeck/` already exists, the installer stops. Merge manually or move th
 
 ## Experimental Plugin Preview
 
-`ctd-plugin-v0.2.0.zip` is a beta plugin preview. It includes a valid local Codex plugin manifest and the ThreadDeck preview skill, but does not yet include production hooks or an MCP server.
+`ctd-plugin-v0.2.0.zip` is a beta plugin preview. It includes a valid local Codex plugin manifest, the ThreadDeck preview skill, the read-only project-state detector, and the execution-surface recommender, but does not yet include production hooks or an MCP server.
 
 For Codex CLI marketplace installation:
 
