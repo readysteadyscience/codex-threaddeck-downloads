@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "ctd.downloads.channel.v1",
+  "channel": "stable",
+  "latest": "0.2.0",
+  "versions": [
+    {
+      "version": "0.2.0",
+      "publishedAt": "2026-06-30T00:00:00Z",
+      "notes": "../release-notes/v0.2.0.md",
+      "packages": [
+        {
+          "id": "ctd-project-kit",
+          "path": "../releases/v0.2.0/ctd-project-kit-v0.2.0.zip",
+          "sizeBytes": 19050,
+          "sha256": "981ce5be661bd5725f6128ab3bdf05d622a6edf2c3a449ec3dc3afb1352c64a5"
+        },
+        {
+          "id": "ctd-plugin-preview",
+          "path": "../releases/v0.2.0/ctd-plugin-v0.2.0.zip",
+          "sizeBytes": 3327,
+          "sha256": "6064f8c1c743ee82519ec64ed13f1dad57629b3a43d8d5a758e3f4effed6e907",
+          "stability": "experimental"
+        }
+      ]
+    }
+  ]
+}
