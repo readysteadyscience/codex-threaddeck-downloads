@@ -1,0 +1,44 @@
+{
+  "name": "codex-threaddeck",
+  "version": "0.2.0",
+  "description": "Codex ThreadDeck control-plane preview for controller/worker coordination inside Codex.",
+  "author": {
+    "name": "Ready Steady Science",
+    "url": "https://github.com/readysteadyscience"
+  },
+  "homepage": "https://github.com/readysteadyscience/codex-threaddeck-downloads",
+  "repository": "https://github.com/readysteadyscience/codex-threaddeck-downloads",
+  "license": "UNLICENSED",
+  "keywords": [
+    "codex",
+    "threaddeck",
+    "ctd",
+    "controller",
+    "worker",
+    "task-card",
+    "short-report",
+    "handoff"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Codex ThreadDeck",
+    "shortDescription": "Detect CTD project state and coordinate controller/worker workflows",
+    "longDescription": "Codex ThreadDeck helps Codex conversations detect project state, recommend controller or worker bootstrap, render task cards, parse short reports, validate registries, update status boards, and create handoffs while respecting Codex tool boundaries.",
+    "developerName": "Ready Steady Science",
+    "category": "Coding",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/readysteadyscience/codex-threaddeck-downloads",
+    "privacyPolicyURL": "https://github.com/readysteadyscience/codex-threaddeck-downloads/blob/main/docs/no-source-policy.md",
+    "termsOfServiceURL": "https://github.com/readysteadyscience/codex-threaddeck-downloads/blob/main/docs/no-source-policy.md",
+    "defaultPrompt": [
+      "Check whether this project should use CTD",
+      "Create a CTD task card",
+      "Parse this CTD short report",
+      "Prepare a CTD handoff"
+    ],
+    "brandColor": "#2563EB"
+  }
+}

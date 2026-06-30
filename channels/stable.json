@@ -11,14 +11,14 @@
         {
           "id": "ctd-project-kit",
           "path": "../releases/v0.2.0/ctd-project-kit-v0.2.0.zip",
-          "sizeBytes": 19050,
-          "sha256": "981ce5be661bd5725f6128ab3bdf05d622a6edf2c3a449ec3dc3afb1352c64a5"
+          "sizeBytes": 20506,
+          "sha256": "c9cf3eceaf223719d6fdb62995a71bb5fd0eac99696a0d579a5081f1f9e72bbf"
         },
         {
           "id": "ctd-plugin-preview",
           "path": "../releases/v0.2.0/ctd-plugin-v0.2.0.zip",
-          "sizeBytes": 3327,
-          "sha256": "6064f8c1c743ee82519ec64ed13f1dad57629b3a43d8d5a758e3f4effed6e907",
+          "sizeBytes": 4977,
+          "sha256": "efc9e1fd49a51c238098b4d3b55178d904f0f7d655cd3546300f023a11709563",
           "stability": "experimental"
         }
       ]

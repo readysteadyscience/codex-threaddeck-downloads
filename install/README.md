@@ -32,4 +32,13 @@ If `.threaddeck/` already exists, the installer stops. Merge manually or move th
 
 ## Experimental Plugin Preview
 
-`ctd-plugin-v0.2.0.zip` is a beta preview skeleton, not a production plugin. Use it only to inspect the planned plugin shape.
+`ctd-plugin-v0.2.0.zip` is a beta plugin preview. It includes a valid local Codex plugin manifest and the ThreadDeck preview skill, but does not yet include production hooks or an MCP server.
+
+For Codex CLI marketplace installation:
+
+```bash
+codex plugin marketplace add readysteadyscience/codex-threaddeck-downloads
+codex plugin add codex-threaddeck@readysteadyscience
+```
+
+If marketplace installation is unavailable in your Codex environment, download and inspect the plugin package manually.

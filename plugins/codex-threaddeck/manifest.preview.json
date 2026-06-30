@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "ctd.plugin.preview.v1",
+  "id": "codex-threaddeck",
+  "name": "Codex ThreadDeck",
+  "version": "0.2.0",
+  "stability": "experimental",
+  "status": "preview-skeleton",
+  "defaultInstallPackage": "ctd-project-kit-v0.2.0.zip",
+  "capabilities": [
+    "detect-project-state",
+    "recommend-bootstrap",
+    "render-task-card",
+    "parse-short-report",
+    "validate-thread-registry",
+    "update-status-board",
+    "create-handoff"
+  ],
+  "boundaries": [
+    "does-not-inject-thread-tools",
+    "does-not-create-background-workers-without-user-visible-routing",
+    "requires-available-codex-thread-tools-for-real-dispatch"
+  ]
+}

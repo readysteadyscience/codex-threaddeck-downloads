@@ -17,7 +17,7 @@ CTD is a Codex multi-thread collaboration control plane. It installs a small pro
 | Package | Purpose |
 | --- | --- |
 | `releases/v0.2.0/ctd-project-kit-v0.2.0.zip` | Public-safe project kit for installing `AGENTS.md` plus `.threaddeck/` into a target project. |
-| `releases/v0.2.0/ctd-plugin-v0.2.0.zip` | Experimental plugin preview skeleton. This is not a production plugin. |
+| `releases/v0.2.0/ctd-plugin-v0.2.0.zip` | Experimental Codex plugin preview with a valid local plugin manifest and ThreadDeck skill. |
 
 ## Install Flow
 
@@ -38,7 +38,12 @@ See `docs/no-source-policy.md`.
 
 ## Experimental Marketplace Entry
 
-Marketplace and deep-link installation are beta surfaces in this draft. They are documented under `marketplace/marketplace.json` and are not the default install path.
+Marketplace and deep-link installation are beta surfaces in this draft. The Codex CLI marketplace entry is available at `.agents/plugins/marketplace.json`; product metadata is documented under `marketplace/marketplace.json`.
+
+```bash
+codex plugin marketplace add readysteadyscience/codex-threaddeck-downloads
+codex plugin add codex-threaddeck@readysteadyscience
+```
 
 ## Verification
 
