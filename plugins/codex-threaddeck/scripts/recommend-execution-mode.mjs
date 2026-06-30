@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { asArray, nowIso, parseArgs, readJson, redactSensitive, trimForState, writeJson, writeText } from "./ctd-lib.mjs";
@@ -226,6 +227,6 @@ if (format === "json") {
 }
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (process.argv[1] && fs.realpathSync(path.resolve(process.argv[1])) === fs.realpathSync(fileURLToPath(import.meta.url))) {
   main();
 }
