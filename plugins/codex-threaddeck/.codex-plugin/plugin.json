@@ -1,7 +1,7 @@
 {
   "name": "codex-threaddeck",
-  "version": "0.2.0",
-  "description": "Codex ThreadDeck control-plane preview for controller/worker coordination inside Codex.",
+  "version": "0.2.1",
+  "description": "Codex ThreadDeck control-plane preview for normal project routing, controller/worker coordination, default trigger diagnostics, and bounded subagent policy inside Codex.",
   "author": {
     "name": "Ready Steady Science",
     "url": "https://github.com/readysteadyscience"
@@ -15,6 +15,7 @@
     "ctd",
     "controller",
     "worker",
+    "subagent",
     "task-card",
     "short-report",
     "handoff"
@@ -22,8 +23,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Codex ThreadDeck",
-    "shortDescription": "Detect CTD project state and coordinate controller/worker workflows",
-    "longDescription": "Codex ThreadDeck helps Codex conversations detect project state, recommend the smallest execution surface, optionally record advisory auto-route hook decisions, prepare safe dispatch plans, render task cards, parse short reports, validate registries, update status boards, and create handoffs while respecting Codex tool boundaries.",
+    "shortDescription": "Route normal Codex project work through CTD when installed",
+    "longDescription": "Codex ThreadDeck helps Codex conversations treat ordinary project prompts as CTD-routable intent, detect project state, recommend the smallest execution surface, optionally record advisory auto-route hook decisions, prepare safe dispatch plans, render task cards, parse short reports, validate registries, update status boards, and create handoffs while respecting Codex tool boundaries.",
     "developerName": "Ready Steady Science",
     "category": "Coding",
     "capabilities": [

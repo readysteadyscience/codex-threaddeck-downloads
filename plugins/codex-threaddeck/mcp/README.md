@@ -1,15 +1,3 @@
-# MCP Preview
+# CTD MCP Preview
 
-This directory is a placeholder for a future CTD MCP layer.
-
-Candidate tools:
-
-- `detect_project_state`
-- `recommend_next_step`
-- `render_task_card`
-- `parse_short_report`
-- `validate_thread_registry`
-- `update_status_board`
-- `create_handoff`
-
-No MCP server is included in this preview package.
+This package does not yet include a production MCP server. The current preview exposes local scripts and a Codex Skill. MCP tools for detect/recommend/render/validate/parse/update/handoff are planned for the next package line.

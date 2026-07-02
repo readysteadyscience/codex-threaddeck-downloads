@@ -1,6 +1,6 @@
 ---
 name: codex-thread-dispatch
-description: Route user instructions from a controller Codex thread to other Codex threads. Use when the user asks this thread to control, message, dispatch tasks to, query, coordinate, or summarize another Codex conversation/window/thread.
+description: Default ThreadDeck routing for normal Codex project work when CTD is installed or a project mentions ThreadDeck, .threaddeck, or CTD in AGENTS.md. Use for ordinary user prompts, project work, multi-step coding tasks, controller/worker coordination, subagent policy, task routing, task cards, short reports, handoffs, and cross-thread dispatch when thread tools are available.
 ---
 
 # Codex Thread Dispatch
@@ -77,6 +77,22 @@ Do not use a fixed default set of Docs/Tests/Implementation/Release workers. For
 
 The controller may also use Codex native subagents for its own bounded implementation, research, or verification work. A visible worker receiving a TaskCard may use Codex native subagents inside that worker's task when the TaskCard allows it, subject to bounded scope, max-depth, max-count, and risk gates.
 
+## Controller Drift Guard
+
+Before the controller edits files, runs a build/install, changes project state, or starts a multi-step fix, it must perform a delegation check.
+
+The controller should not gradually turn into the implementation worker during a long session. Its default job is to route, summarize, verify, and decide.
+
+Use this order:
+
+1. If an active or tested `↳` worker already matches the task domain, dispatch a bounded TaskCard to that worker before controller self-execution. The worker may use Codex native subagents inside its own task.
+2. If no matching visible worker exists but the task is bounded and low risk, use Codex native subagents in the controller thread.
+3. If the task is truly tiny, local, and does not touch durable project state, the controller may self-execute.
+4. If the controller self-executes a non-trivial task, it must state the delegation check explicitly: `CTD delegation check: self-execute because ...`.
+5. If the controller has already started editing and later discovers a matching worker, stop at the next safe checkpoint, summarize the current evidence, and hand the remaining work to the worker.
+
+When the project has `ctd-plan-dispatch.mjs`, use it as the executable guard. If it returns `delegate_to_existing_worker_before_self_execution`, read the matching worker status and dispatch instead of continuing implementation in the controller.
+
 When `.threaddeck/last-routing-decision.json` exists, read it as advisory evidence of the most recent CTD auto-route hook decision. Do not treat it as permission to create threads or dispatch work; real dispatch still requires available thread tools and the usual confirmation gates.
 
 When available, turn the routing decision into a safe dispatch plan before touching thread tools:
@@ -86,6 +102,23 @@ node ../../scripts/ctd-plan-dispatch.mjs --root . --format text
 ```
 
 If the plan says `request_user_confirmation_to_create_or_select_workers`, ask the user before creating, renaming, or registering workers. If the plan says `run_safe_test_before_dispatch`, send only the harmless safety test first. If the plan says `prepare_task_card_for_existing_workers`, read the worker status and render a bounded TaskCard before dispatch. When rendering a TaskCard for a visible worker, include `workerMayUseSubagents: true` and a bounded `subagentPlan` when the routing plan allows worker-local Codex native subagents.
+
+## Worker Lifecycle Guard
+
+Visible workers are durable role containers, not disposable per-task tabs. Keep them useful and keep the project sidebar clean.
+
+Use this lifecycle order:
+
+1. If no suitable `↳` worker exists for a persistent role, create or select the smallest necessary new worker when thread tools and current policy allow it. Otherwise produce a manual TaskCard.
+2. If a suitable worker exists, read it before dispatching.
+3. If that worker's context is too long, stale, blocked beyond recovery, or role-drifted, do not fork it. Forking copies the heavy context into the replacement and defeats the purpose.
+4. Create a compact Handoff from the old worker instead: only continuity state, current decisions, evidence paths, open tasks, risk boundaries, and first next step. Do not preserve the old transcript.
+5. Preserve a local history reference before archival. Default CTD Home is `~/Documents/.Codex-ThreadDeck/`, or `CTD_HOME` when configured. Project `.threaddeck/history/` is only a lightweight pointer layer.
+6. Start a fresh replacement worker from that Handoff and mark it with the `↳` prefix.
+7. After the replacement has acknowledged the Handoff and passed any harmless safety test, mark the old worker read-only, archive-candidate, or archived when `set_thread_archived` is available.
+8. Archive unused, completed, legacy, or replaced workers promptly after a safe checkpoint and after local history reference is recorded. Archiving is reversible by the user; deleting is not part of normal CTD cleanup.
+
+The controller is the only thread that may connect long history. Replacement workers receive continuity state, not history. The goal is to keep work moving, not to preserve the old context window.
 
 ## Routing Rules
 
@@ -119,9 +152,9 @@ Recommended hygiene rules:
 
 - Keep only the active controller and active workers unarchived when possible.
 - Pin the active controller when `set_thread_pinned` is available.
-- Archive legacy or backup threads after migration or replacement.
+- Archive legacy, completed, stale, replaced, or backup worker threads after migration or replacement.
 - Never dispatch to a legacy thread when an official `↳` thread exists for the same role.
-- If the user wants to preserve an old thread's history, have the tool-enabled controller read and migrate it into the active controller instead of trying to inject tools into the old thread.
+- If the user wants to preserve an old thread's history, have the tool-enabled controller read and migrate compact state into the active controller or a Handoff instead of trying to inject the entire old transcript into a new worker.
 - For a candidate target, prefer an official `↳` thread over an unprefixed older thread when title/cwd otherwise overlap.
 
 ## Message Types

@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 
 export function parseArgs(argv) {
@@ -65,6 +66,22 @@ export function slugify(value) {
 export function makeId(prefix, seed) {
   const stamp = nowIso().replace(/[-:.TZ]/g, "").slice(0, 14);
   return `${prefix}-${stamp}-${slugify(seed).slice(0, 24)}`;
+}
+
+export function expandHome(value) {
+  const text = String(value || "");
+  if (text === "~") return os.homedir();
+  if (text.startsWith("~/")) return path.join(os.homedir(), text.slice(2));
+  return text;
+}
+
+export function resolveCtdHome(args = {}) {
+  return path.resolve(expandHome(args.home || args.ctdHome || args["ctd-home"] || process.env.CTD_HOME || "~/Documents/.Codex-ThreadDeck"));
+}
+
+export function resolveCtdHistoryProjectDir(args = {}) {
+  const project = slugify(args.project || args.root || process.cwd());
+  return path.join(resolveCtdHome(args), "history", project);
 }
 
 export function asArray(value) {

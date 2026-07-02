@@ -1,30 +1,44 @@
-# Plugin Boundary
+# ThreadDeck Plugin Boundary
 
-The CTD plugin preview is an experimental package for early local installation testing.
+This preview package is a public install and update surface for Codex ThreadDeck. It is not the private source repository.
 
-It may help Codex:
+## What The Plugin Preview Provides
 
-- detect a project kit;
-- run a read-only project-state detector;
-- compile ordinary installed-project prompts into CTD routing envelopes;
-- recommend the smallest execution surface for the current task;
-- record advisory auto-route hook decisions after hook trust review;
-- turn the latest routing decision into a safe dispatch plan;
-- recommend a minimal-confirmation bootstrap only when persistent worker coordination is useful;
-- validate local registry files;
-- render TaskCards;
-- parse ShortReports;
-- update local status;
-- create handoff files.
+- A Codex plugin manifest.
+- A ThreadDeck Skill with default-trigger copy for normal installed-project prompts.
+- Project-state detection scripts.
+- CTD routing-envelope recommendation scripts.
+- Runtime doctor diagnostics for plugin, Skill, hook, and project-kit readiness.
+- A reviewed user-level hook installer with rollback support.
+- A hidden CTD Home history-vault preview.
+- Advisory dispatch planning from `.threaddeck/last-routing-decision.json` and the local registry.
 
-It must not claim to:
+## What It Does Not Provide
 
-- bypass Codex permissions;
-- silently control other conversations;
-- guarantee thread tools in every conversation;
-- perform high-risk actions without explicit user confirmation.
-- auto-run high-risk release, deploy, account, credential, destructive, or private-repository work.
-- treat hook output as permission to create threads or dispatch work.
-- treat a dispatch plan as permission to create threads or dispatch work.
+- It does not inject Codex thread tools into ordinary conversations.
+- It does not silently rewrite prompts.
+- It does not silently create workers, fork threads, archive threads, publish releases, deploy software, or perform account/credential actions.
+- It does not bypass Codex permissions, hook trust review, or project safety rules.
+- It does not expose the private source repository.
 
-The package includes a local plugin manifest and a preview `hooks/hooks.json`. Non-managed hooks must be reviewed and trusted in Codex before they run. Production MCP tools are not included yet. The project kit remains the project-level state install path.
+## Runtime Expectations
+
+Codex may select the ThreadDeck Skill when the project or prompt matches the Skill description. The runtime doctor can help verify whether the Skill default trigger is broad enough for normal CTD routing.
+
+User-level hooks, when installed and trusted, are advisory. They can record routing decisions in `.threaddeck/`, but they do not mutate prompts or perform cross-thread dispatch.
+
+Real cross-thread dispatch requires the current Codex conversation to expose the relevant thread tools, such as listing, reading, creating, renaming, archiving, or messaging threads. If those tools are unavailable, CTD must fall back to TaskCards, Handoffs, and explicit user guidance.
+
+## Recommended Public Wording
+
+Use:
+
+```text
+Install CTD, continue using Codex normally, and let ThreadDeck detect project/task state and recommend the smallest safe execution surface.
+```
+
+Avoid claiming:
+
+```text
+CTD silently controls every Codex window or bypasses Codex tool limits.
+```

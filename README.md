@@ -6,18 +6,18 @@ CTD is a Codex execution router and multi-thread collaboration control plane. It
 
 ## Current Channel
 
-- Latest stable version: `v0.2.0`
+- Latest stable version: `v0.2.1`
 - Channel metadata: `channels/stable.json`
 - Latest metadata: `latest.json`
-- Release notes: `release-notes/v0.2.0.md`
+- Release notes: `release-notes/v0.2.1.md`
 - Checksums: `checksums/SHA256SUMS`
 
 ## Downloads
 
 | Package | Purpose |
 | --- | --- |
-| `releases/v0.2.0/ctd-project-kit-v0.2.0.zip` | Public-safe project kit for installing `AGENTS.md` plus `.threaddeck/` into a target project. |
-| `releases/v0.2.0/ctd-plugin-v0.2.0.zip` | Experimental Codex plugin preview with a valid local plugin manifest, ThreadDeck skill, intent compiler, advisory auto-route hook preview, and dispatch planner. |
+| `releases/v0.2.1/ctd-project-kit-v0.2.1.zip` | Public-safe project kit for installing `AGENTS.md` plus `.threaddeck/` into a target project. |
+| `releases/v0.2.1/ctd-plugin-v0.2.1.zip` | Experimental Codex plugin preview with a valid local plugin manifest, broader default ThreadDeck skill trigger, runtime doctor, reviewed hook installer, history vault preview, intent compiler, advisory auto-route hook preview, and dispatch planner. |
 
 ## Install Flow
 

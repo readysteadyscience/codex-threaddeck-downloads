@@ -5,8 +5,8 @@ The default install path is the project kit package.
 ## Install
 
 ```bash
-unzip releases/v0.2.0/ctd-project-kit-v0.2.0.zip -d /tmp/ctd-project-kit
-/tmp/ctd-project-kit/ctd-project-kit-v0.2.0/scripts/install-project-kit.sh /absolute/path/to/target-project
+unzip releases/v0.2.1/ctd-project-kit-v0.2.1.zip -d /tmp/ctd-project-kit
+/tmp/ctd-project-kit/ctd-project-kit-v0.2.1/scripts/install-project-kit.sh /absolute/path/to/target-project
 ```
 
 The target project should be the project currently opened in Codex.
@@ -32,7 +32,7 @@ If `.threaddeck/` already exists, the installer stops. Merge manually or move th
 
 ## Experimental Plugin Preview
 
-`ctd-plugin-v0.2.0.zip` is a beta plugin preview. It includes a valid local Codex plugin manifest, the ThreadDeck preview skill, the read-only project-state detector, the intent compiler, the execution-surface recommender, an advisory auto-route hook preview, and a dispatch planner. The hook must be reviewed/trusted in Codex before use. The hook and planner do not rewrite prompts, create threads, or dispatch messages.
+`ctd-plugin-v0.2.1.zip` is a beta plugin preview. It includes a valid local Codex plugin manifest, the ThreadDeck preview skill with broader default-trigger copy, the runtime doctor, the reviewed hook installer, the history vault preview, the read-only project-state detector, the intent compiler, the execution-surface recommender, an advisory auto-route hook preview, and a dispatch planner. The hook must be reviewed/trusted in Codex before use. The hook and planner do not rewrite prompts, create threads, or dispatch messages.
 
 For Codex CLI marketplace installation:
 

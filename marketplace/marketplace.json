@@ -3,14 +3,14 @@
   "id": "codex-threaddeck",
   "name": "Codex ThreadDeck",
   "publisher": "readysteadyscience",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "stability": "experimental",
   "defaultInstall": "../install/README.md",
   "deepLink": "codex://plugins/install/codex-threaddeck?marketplace=readysteadyscience",
   "fallbackCommand": "codex plugin marketplace add readysteadyscience/codex-threaddeck-downloads",
   "packages": [
-    "../releases/v0.2.0/ctd-plugin-v0.2.0.zip",
-    "../releases/v0.2.0/ctd-project-kit-v0.2.0.zip"
+    "../releases/v0.2.1/ctd-plugin-v0.2.1.zip",
+    "../releases/v0.2.1/ctd-project-kit-v0.2.1.zip"
   ],
   "notes": "This marketplace metadata is beta-only. The default install path remains the static project kit download."
 }
